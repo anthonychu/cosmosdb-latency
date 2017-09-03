@@ -28,7 +28,8 @@ namespace cosmosdb_latency
             documentClient.OpenAsync().Wait();
             documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = "test" }).Wait();
             documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri("test"), 
-                new DocumentCollection { Id = "test" });
+                new DocumentCollection { Id = "test" }, 
+                new RequestOptions{ OfferThroughput = 400 });
 
             services.AddSingleton<IDocumentClient>(documentClient);
             services.AddMvc();
