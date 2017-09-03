@@ -1,0 +1,44 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+
+<h3 id="time-taken"></h3>
+<h4 id="endpoint"></h4>
+
+<div class="row">
+    <div class="col-md-12">
+        <canvas id="smoothie-chart" height="400" width="800" />
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.6.0/superagent.min.js" integrity="sha256-HOyWQge8jnElRaCN84NixFwlDE43tm6pmh5sf9VjoX0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.32.0/smoothie.min.js" integrity="sha256-XhG+83eI4fbOElJA7MrXX9+wrusE30nWy80YmPW2tUU=" crossorigin="anonymous"></script>
+
+<script>
+(function() {
+    var chart = new SmoothieChart({ millisPerPixel: 100, minValue: 0 }),
+    canvas = document.getElementById('smoothie-chart'),
+    series = new TimeSeries();
+
+    chart.addTimeSeries(series, { lineWidth:2,strokeStyle:'#00ff00' });
+    chart.streamTo(canvas, 500);
+
+    function getLatency() {
+
+        superagent
+            .get('/api/latency')
+            .end(function(err, res) {
+                var result = res.body;
+                document.getElementById('time-taken').textContent = result.timeTaken + ' ms';
+                document.getElementById('endpoint').textContent = result.endpoint;
+                series.append(new Date().getTime(), result.timeTaken);
+                setTimeout(getLatency, 1000);
+            });
+    }
+    getLatency();
+}());
+</script>
