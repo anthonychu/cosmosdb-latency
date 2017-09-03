@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <canvas id="smoothie-chart" height="400" width="800" />
+        <canvas id="smoothie-chart" height="500" width="800" />
     </div>
 </div>
 
@@ -20,7 +20,7 @@
 
 <script>
 (function() {
-    var chart = new SmoothieChart({ millisPerPixel: 100, minValue: 0 }),
+    var chart = new SmoothieChart({ millisPerPixel: 100, minValue: 0, maxValue: 350 }),
     canvas = document.getElementById('smoothie-chart'),
     series = new TimeSeries();
 
