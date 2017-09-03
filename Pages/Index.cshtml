@@ -35,7 +35,10 @@
                 var result = res.body;
                 document.getElementById('time-taken').textContent = result.timeTaken + ' ms';
                 document.getElementById('endpoint').textContent = result.endpoint;
-                series.append(new Date().getTime(), result.timeTaken);
+                if (result.timeTaken <= 1000) {
+                    // cap what to graph so that the spike during failover won't distort the graph too much
+                    series.append(new Date().getTime(), result.timeTaken);
+                }
                 setTimeout(getLatency, 1000);
             });
     }
