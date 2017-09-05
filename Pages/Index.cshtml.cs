@@ -8,30 +8,25 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace cosmosdb_latency.Pages
 {
     public class IndexModel : PageModel
     {
-        // private readonly IDocumentClient documentClient;
+        private readonly IConfiguration configuration;
 
-        // public IndexModel(IDocumentClient documentClient)
-        // {
-        //     this.documentClient = documentClient;
-        // }
+        public IndexModel(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
-        // public string Json { get; set; }
-        // public TimeSpan TimeTaken { get; set; }
-        // public string WriteEndpoint { get; set; }
+        public string WebsiteRegion { get; set; }
 
-        // public async Task OnGet()
-        // {
-        //     var sw = Stopwatch.StartNew();
-        //     var result = await documentClient.CreateDocumentAsync("/dbs/test/colls/test", new { date = DateTimeOffset.UtcNow });
-        //     TimeTaken = sw.Elapsed;
-        //     Json = JsonConvert.SerializeObject(result.Resource);
-        //     WriteEndpoint = documentClient.WriteEndpoint.ToString();
-        // }
+        public void OnGet()
+        {
+            WebsiteRegion = configuration["REGION_NAME"]?.ToLowerInvariant()?.Replace(" ", "");
+        }
     }
 }
