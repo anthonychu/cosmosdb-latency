@@ -28,21 +28,32 @@
     chart.addTimeSeries(series, { lineWidth:2,strokeStyle:'#00ff00' });
     chart.streamTo(canvas, 500);
 
+    var previousResult;
+
     function getLatency() {
+        // write previous result on graph to keep line going, until the next value appears
+        var interval = setInterval(() => displayLatency(previousResult), 500);
         superagent
             .get('/api/latency')
             .end(function(err, res) {
-                var result = res.body;
-                if (result && result.timeTaken <= 1000) {
-                    // cap what to graph so that the spike during failover won't distort the graph too much
-                    document.getElementById('time-taken').textContent = result.timeTaken + ' ms';
-                    var region = /-([a-z0-9]+)\.documents\.azure\.com/.exec(result.endpoint)[1];
-                    document.getElementById('cosmosdb-region').textContent = region;
-                    series.append(new Date().getTime(), result.timeTaken);
-                }
+                clearInterval(interval);
+
+                var result = res && res.body;
+                displayLatency(result);
+                previousResult = result;
                 setTimeout(getLatency, 1000);
             });
     }
     getLatency();
+
+    function displayLatency(result) {
+        if (result && result.timeTaken <= 1000) {
+            // cap what to graph so that the spike during failover won't distort the graph too much
+            document.getElementById('time-taken').textContent = result.timeTaken + ' ms';
+            var region = /-([a-z0-9]+)\.documents\.azure\.com/.exec(result.endpoint)[1];
+            document.getElementById('cosmosdb-region').textContent = region;
+            series.append(new Date().getTime(), result.timeTaken);
+        }
+    }
 }());
 </script>
